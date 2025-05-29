@@ -4,7 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
+# Assumindo que o dataset está em um arquivo CSV chamado 'dataset.csv'
+# Se for outro formato (como Excel), ajuste a função de leitura (ex: pd.read_excel)
 df = pd.read_csv('wildfires.csv')
 
 # Exibir as primeiras linhas do DataFrame para verificar
@@ -79,7 +80,6 @@ print(df.info())
 print("\nEstatísticas descritivas após limpeza:")
 print(df.describe(include='all'))
 
-# Configuração do estilo dos gráficos
 plt.style.use('ggplot')
 sns.set_palette("viridis")
 
@@ -166,8 +166,9 @@ plt.ylabel('Nome do Incêndio')
 plt.tight_layout()
 plt.show()
 
-# Defina a semente aleatória
-semente_aleatoria = 9
+# Defina a semente aleatória (somatório do último número da matrícula de todos os integrantes do grupo)
+# Substitua 'sua_semente' pelo valor calculado
+semente_aleatoria = 42
 
 # Definir o tamanho da amostra
 tamanho_amostra = 500000
@@ -185,18 +186,9 @@ if len(df) >= tamanho_amostra:
     print("\nInformações da amostra:")
     print(df_amostra.info())
 
-# Numero total de incendios
+# Para verificar o número total de incêndios no dataset
 numero_total_incendios = len(df)
-
 print(f"\nO número total de incêndios no dataset é: {numero_total_incendios}")
-
-# Filtrar o DataFrame para incluir apenas incêndios na Califórnia ('CA')
-df_california = df[df['STATE'] == 'CA']
-
-# Contar o número de incêndios na Califórnia
-numero_incendios_california = len(df_california)
-
-print(f"\nO número total de incêndios na Califórnia é: {numero_incendios_california}")
 
 # Contar a ocorrência de incêndios por ano
 incendios_por_ano = df['FIRE_YEAR'].value_counts().sort_index()
@@ -219,6 +211,60 @@ plt.title('Porcentagem de Crescimento Anual de Incêndios')
 plt.xlabel('Ano')
 plt.ylabel('Crescimento (%)')
 plt.xticks(rotation=45)
-plt.axhline(0, color='grey', linestyle='--', linewidth=0.8)
+plt.axhline(0, color='grey', linestyle='--', linewidth=0.8) # Adiciona linha no 0 para visualização
 plt.tight_layout()
 plt.show()
+
+# 6. Distribuição geográfica dos incêndios
+# Isso requer dados de latitude e longitude (LATITUDE, LONGITUDE)
+if 'LATITUDE' in df.columns and 'LONGITUDE' in df.columns:
+    # Plotar um scatter plot simples no mapa (pode ser lento com muitos pontos)
+    plt.figure(figsize=(10, 8))
+    sns.scatterplot(x='LONGITUDE', y='LATITUDE', data=df_amostra, alpha=0.5, s=5, palette='viridis') # Usando a amostra para performance
+    plt.title('Distribuição Geográfica dos Incêndios (Amostra)')
+    plt.xlabel('Longitude')
+    plt.ylabel('Latitude')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+    # 7. Distribuição geográfica dos incêndios com heatmap
+    # Para uma visualização mais densa, um mapa de calor 2D
+    # Ajuste 'bins' e 'cmap' conforme necessário para melhor visualização
+    plt.figure(figsize=(10, 8))
+    plt.hist2d(df_amostra['LONGITUDE'], df_amostra['LATITUDE'], bins=100, cmap='inferno')
+    plt.colorbar(label='Contagem de Incêndios')
+    plt.title('Mapa de Calor da Distribuição Geográfica dos Incêndios (Amostra)')
+    plt.xlabel('Longitude')
+    plt.ylabel('Latitude')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+
+
+
+# 8. Incêndios por Dia da Semana
+# Se a coluna 'Data' (ou 'DISCOVERY_DATE') já foi convertida para datetime
+if 'Data' in df.columns:
+    df['Dia_Semana'] = df['Data'].dt.day_name() # Cria coluna com nome do dia da semana
+    dias_ordem = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+    plt.figure(figsize=(12, 6))
+    sns.countplot(x='Dia_Semana', data=df, order=dias_ordem)
+    plt.title('Ocorrência de Incêndios por Dia da Semana')
+    plt.xlabel('Dia da Semana')
+    plt.ylabel('Número de Incêndios')
+    plt.tight_layout()
+    plt.show()
+elif 'DISCOVERY_DATE' in df.columns:
+    df['Dia_Semana_Descobrimento'] = pd.to_datetime(df['DISCOVERY_DATE'], errors='coerce').dt.day_name()
+    dias_ordem = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+    plt.figure(figsize=(12, 6))
+    sns.countplot(x='Dia_Semana_Descobrimento', data=df, order=dias_ordem)
+    plt.title('Ocorrência de Incêndios por Dia da Semana de Descobrimento')
+    plt.xlabel('Dia da Semana')
+    plt.ylabel('Número de Incêndios')
+    plt.tight_layout()
+    plt.show()
