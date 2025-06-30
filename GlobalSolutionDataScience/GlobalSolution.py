@@ -25,9 +25,8 @@ except KeyError:
     print("Coluna 'Data' não encontrada. Ajuste o nome da coluna se necessário.")
 
 # Padronização de campos de categorias (Exemplo: convertendo para minúsculas e removendo espaços extras)
-# Substitua 'Categoria' pelo nome real da sua coluna categórica
 try:
-    df['Estado'] = df['Estado'].str.lower().str.strip()
+    df['State'] = df['State'].str.lower().str.strip()
 except KeyError:
     print("Coluna 'Estado' não encontrada. Ajuste o nome da coluna se necessário.")
 except AttributeError:
@@ -166,14 +165,13 @@ plt.ylabel('Nome do Incêndio')
 plt.tight_layout()
 plt.show()
 
-# Defina a semente aleatória (somatório do último número da matrícula de todos os integrantes do grupo)
-# Substitua 'sua_semente' pelo valor calculado
-semente_aleatoria = 42
+# Somatoria do ultimo numero de matricula
+semente_aleatoria = 9
 
-# Definir o tamanho da amostra
+# Definir o tamanho
 tamanho_amostra = 500000
 
-# Verificar se o tamanho do DataFrame é maior ou igual ao tamanho da amostra desejada
+# Verificar se o tamanho do DataFrame é maior ou igual ao tamanho da amostra
 if len(df) >= tamanho_amostra:
     # Selecionar a amostra aleatória sem reposição
     df_amostra = df.sample(n=tamanho_amostra, random_state=semente_aleatoria, replace=False)
@@ -197,11 +195,10 @@ incendios_por_ano = df['FIRE_YEAR'].value_counts().sort_index()
 diferenca_anual = incendios_por_ano.diff()
 
 # Calcular a porcentagem de crescimento anual
-# Evitar divisão por zero para o primeiro ano (que terá NaN na diferença)
 # Para o primeiro ano com dados, não há crescimento em relação a um ano anterior no dataset
 porcentagem_crescimento_anual = (diferenca_anual / incendios_por_ano.shift(1)) * 100
 
-print("\nPorcentagem de crescimento de incêndios por FIRE_YEAR:")
+print("\nPorcentagem de crescimento de incêndios por FIRE_YEAR com base de 1992:")
 print(porcentagem_crescimento_anual.dropna()) # Remover o NaN do primeiro ano
 
 # Opcionalmente, você pode plotar o crescimento anual
